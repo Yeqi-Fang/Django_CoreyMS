@@ -24,7 +24,7 @@
         </div>
     </article>
     <div>
-
+        <h1 class="ml-3">Comments</h1>
         {% for comment in commets %}
 
             <div class="container content-section">
@@ -34,21 +34,27 @@
                         <img class="rounded-circle comment-img" src="{{ comment.user.profile.image.url }}">
 
                     </div>
-                    <div class="col-4">
+                    <div class="col-11">
                         {% if comment.post.author == user or comment.user == user or user.is_superuser %}
-                            <span class="mr-3 ml-1"><a href="#">{{ comment.user.username }}</a> </span>
-                            <span class="text-muted">{{ comment.updated|date:"F d, Y" }}</span>
-                            <a class="btn btn-danger btn-sm ml-1 mt-1"
-                               href="{% url 'comment-delete' comment.id %}">Delete</a>
-                        {% else %}
-                            <div class="">
-                                <span class="ml-1"><a href="#">{{ comment.user.username }}</a> </span>
-                                <span class="ml-1 text-muted">{{ comment.updated|date:"F d, Y" }}</span>
+                            <div class="row">
+                                <div class="col-9 mt-1">
+                                    <span class="mr-3 ml-1 "><a href="#">{{ comment.user.username }}</a> </span>
+                                    <span class="text-muted">{{ comment.updated|date:"F d, Y" }}</span>
+                                </div>
+                                <div class="col-1">
+                                    <a class="btn btn-danger btn-sm ml-1 "
+                                       href="{% url 'comment-delete' comment.id %}">Delete</a>
+                                </div>
                             </div>
 
 
+                        {% else %}
+                            <div class="row">
+                                <span class="ml-3"><a href="#">{{ comment.user.username }}</a> </span>
+                                <span class="ml-1 text-muted">{{ comment.updated|date:"F d, Y" }}</span>
+                            </div>
                         {% endif %}
-                        <div class="row ml-1 mt-2">
+                        <div class="row ml-1 ">
                             <p style="font-size: 14pt">{{ comment }}</p>
                         </div>
                     </div>
@@ -65,7 +71,7 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Leave Commet</legend>
                 {#                    {{ form|crispy }}#}
-                <input class=form-control form-control-lg"" name="commet">
+                <input class="form-control form-control-lg" placeholder="Say Something..." name="commet">
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Commet</button>

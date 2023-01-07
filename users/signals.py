@@ -3,9 +3,11 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from .models import Profile
 
+
 # 只要user创建，就要创建一个default profile
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
+
     if created:
         Profile.objects.create(user=instance)
 

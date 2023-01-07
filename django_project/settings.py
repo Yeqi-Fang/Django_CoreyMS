@@ -122,8 +122,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
+# 文件储存的地址。
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# 在浏览器中打开时的地址
 MEDIA_URL = '/media/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -131,3 +132,4 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = 'blog-home'
 # 登录界面（@login_required进入的界面）
 LOGIN_URL = 'login'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

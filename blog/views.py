@@ -9,7 +9,8 @@ from django.views.generic import (
     DeleteView
 )
 from .models import Post, Comment
-
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 def home(request):
     context = {'posts': Post.objects.all()}
@@ -109,12 +110,16 @@ def about(request):
     return render(request, 'blog/about.html', {'title': 'About'})
 
 
+# @login_required
 def commet(request, pk):
-    if request.method == 'POST':
-        Comment.objects.create(
-            user=request.user,
-            post=Post.objects.get(id=pk),
-            commet=request.POST.get('commet')
-        )
-        return redirect(f'/post/{pk}')
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            Comment.objects.create(
+                user=request.user,
+                post=Post.objects.get(id=pk),
+                commet=request.POST.get('commet')
+            )
+            return redirect(f'/post/{pk}')
+    messages.error(request, 'You need to login to access This Page.', 'danger')
+    return redirect('/login/')
 # def CommentCreateView(ListView):
