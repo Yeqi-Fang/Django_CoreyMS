@@ -10,8 +10,7 @@ class Post(models.Model):
     content = models.TextField()
     date_posted = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    # image = models.ImageField()
-    post_image = models.ImageField(blank=True, upload_to='post_pics')
+    # post_image = models.ImageField(blank=True, upload_to='post_pics')
 
     def __str__(self):
         return self.title
@@ -22,6 +21,14 @@ class Post(models.Model):
     # view中的PostUpdateView
     def get_absolute_url(self):
         return reverse('post-detail', kwargs={'pk': self.pk})
+
+
+class PostImages(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    image = models.ImageField(blank=True, upload_to='post_pics')
+
+    def __str__(self):
+        return self.post_id
 
 
 class Comment(models.Model):

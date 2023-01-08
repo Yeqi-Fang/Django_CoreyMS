@@ -4,6 +4,16 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 
 
+def my_login_required(func):
+    def inner(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            func(request, *args, **kwargs)
+        messages.error(request, 'You need to login to access This Page.', 'danger')
+        return redirect('/login/')
+
+    return inner
+
+
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -17,6 +27,7 @@ def register(request):
     return render(request, 'users/register.html', {'form': form})
 
 
+# @my_login_required
 @login_required
 def profile(request):
     if request.method == 'POST':

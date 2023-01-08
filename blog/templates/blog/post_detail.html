@@ -6,7 +6,7 @@
         <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
         <div class="media-body">
             <div class="article-metadata">
-                <a class="mr-2" href="#">{{ object.author }}</a>
+                <a class="mr-2" href="{% url 'user-list' object.author.id %}">{{ object.author }}</a>
                 <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
                 {% if object.author == user or user.is_superuser %}
                     <div>
@@ -24,7 +24,7 @@
         </div>
     </article>
     <div>
-        <h1 class="ml-3">Comments</h1>
+        <h1 class="">Comments</h1>
         {% for comment in commets %}
 
             <div class="container content-section">
@@ -38,7 +38,8 @@
                         {% if comment.post.author == user or comment.user == user or user.is_superuser %}
                             <div class="row">
                                 <div class="col-9 mt-1">
-                                    <span class="mr-3 ml-1 "><a href="#">{{ comment.user.username }}</a> </span>
+                                    <span class="mr-3 ml-1 "><a
+                                            href="{% url 'user-list' comment.user.id %}">{{ comment.user.username }}</a> </span>
                                     <span class="text-muted">{{ comment.updated|date:"F d, Y" }}</span>
                                 </div>
                                 <div class="col-1">
@@ -50,7 +51,8 @@
 
                         {% else %}
                             <div class="row">
-                                <span class="ml-3"><a href="#">{{ comment.user.username }}</a> </span>
+                                <span class="ml-3"><a
+                                        href="{% url 'user-list' comment.user.id %}">{{ comment.user.username }}</a> </span>
                                 <span class="ml-1 text-muted">{{ comment.updated|date:"F d, Y" }}</span>
                             </div>
                         {% endif %}
@@ -66,7 +68,7 @@
 
     </div>
     <div>
-        <form method="POST" enctype="multipart/form-data" action="{% url 'commet' object.id %}">
+        <form method="POST" enctype="multipart/form-data" action="">
             {% csrf_token %}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Leave Commet</legend>
