@@ -28,7 +28,7 @@ class PostImages(models.Model):
     image = models.ImageField(blank=True, upload_to='post_pics')
 
     def __str__(self):
-        return self.post_id
+        return str(self.post_id)
 
 
 class Comment(models.Model):

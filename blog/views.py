@@ -81,6 +81,7 @@ class PostDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['commets'] = Comment.objects.filter(post_id=self.kwargs['pk']).all()
+        context['images'] = PostImages.objects.filter(post_id=self.kwargs['pk']).all()
         return context
 
 
@@ -106,7 +107,7 @@ class UserPostListlView(ListView):
 #         # 提交的表单对应的post(instance)的作者必须是当前登录的作者
 #         form.instance.author = self.request.user
 #         return super().form_valid(form)
-
+@login_required
 def upload(request):
     if request.method == "POST":
         p_form = PostCreateForm(request.POST)
@@ -116,7 +117,7 @@ def upload(request):
         images = request.FILES.getlist('images')
         for image in images:
             PostImages.objects.create(image=image, post=p_form.instance)
-
+        return redirect('blog-home')
     else:
         p_form = PostCreateForm(instance=request.user)
     images = PostImages.objects.all()

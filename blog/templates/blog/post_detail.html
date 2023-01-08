@@ -18,8 +18,10 @@
             </div>
             <h2 class="article-title">{{ object.title }}</h2>
             <p class="article-content">{{ object.content }}</p>
-            {% if  object.post_image %}
-                <img src="{{ object.post_image.url }}" width=80%>
+            {% if  images %}
+                {% for image in images %}
+                    <img src="{{ image.image.url }}" width=80%>
+                {% endfor %}
             {% endif %}
         </div>
     </article>
