@@ -2,3 +2,5 @@ db.sqlite3
 .idea
 media/post_pics
 media/profile_pics
+users/migrations
+blog/migrations

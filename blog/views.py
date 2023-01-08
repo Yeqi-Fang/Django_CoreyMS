@@ -108,7 +108,7 @@ class UserPostListlView(ListView):
 #         form.instance.author = self.request.user
 #         return super().form_valid(form)
 @login_required
-def upload(request):
+def post_create_view(request):
     if request.method == "POST":
         p_form = PostCreateForm(request.POST)
         p_form.instance.author = request.user
