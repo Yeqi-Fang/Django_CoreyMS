@@ -15,7 +15,7 @@ from .models import Comment, PostImages, Post
 class PostCreateForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content']
+        fields = ['title', 'content', 'latex']
 
 
 class PostImageCreateForm(forms.ModelForm):
