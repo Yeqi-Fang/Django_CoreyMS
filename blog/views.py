@@ -1,22 +1,19 @@
 import django
-from django.shortcuts import render, redirect, get_object_or_404
 
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import (
     ListView,
     DetailView,
     CreateView,
-    UpdateView,
-    DeleteView
+    DeleteView,
+    UpdateView
 )
 from .models import Post, Comment, User, PostImages
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import PostCreateForm, PostImageCreateForm
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
-
-
-
+from django.shortcuts import render, redirect, get_object_or_404
 
 
 def home(request):
@@ -43,30 +40,10 @@ class PostListView(ListView):
     ordering = ['-date_posted']
 
 
-# def my_login_required(func):
-#     def inner(self, request, *args, **kwargs):
-#         if request.user.is_authenticated:
-#             func(self, request, *args, **kwargs)
-#         messages.error(request, 'You need to login to access This Page.', 'danger')
-#         return redirect('/login/')
-#
-#     return inner
-
-# def my_login_required(function):
-#     def wrapper(self, request, *args, **kw):
-#         user=request.user
-#         if not (user.id and request.session.get('code_success')):
-#             return redirect('/splash/')
-#         else:
-#             return function(request, *args, **kw)
-#     return wrapper
-
-
 class PostDetailView(DetailView):
     model = Post
     fields = ['title', 'content', 'post_image']
 
-    # @my_login_required
     def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             Comment.objects.create(
@@ -80,7 +57,7 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['commets'] = Comment.objects.filter(post_id=self.kwargs['pk']).all()
+        context['comments'] = Comment.objects.filter(post_id=self.kwargs['pk']).all()
         context['images'] = PostImages.objects.filter(post_id=self.kwargs['pk']).all()
         return context
 
@@ -126,9 +103,9 @@ def post_create_view(request):
 
 
 # UserPassesTestMixin 检查修改post的用户是否是author
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class PostUpdateView(CustomLoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
+    fields = ['title', 'content', 'latex']
 
     def form_valid(self, form):
         # 检验
@@ -146,7 +123,30 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     # 确定修改post的用户是否是创建post的用户
 
 
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class PostImageListView(LoginRequiredMixin, ListView):
+    model = PostImages
+    fields = '__all__'
+
+    def get_queryset(self):
+        return PostImages.objects.filter(post=self.kwargs.get('pk')).all()
+
+
+class PostImageUpdateView(CustomLoginRequiredMixin, UpdateView):
+    model = PostImages
+    fields = ['image']
+
+    def form_valid(self, form):
+        # 检验
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+
+class PostImageDeleteView(CustomLoginRequiredMixin, DeleteView):
+    model = PostImages
+    success_url = '/'
+
+
+class PostDeleteView(CustomLoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     # 设置删除成功之后redirect的网页，没有会报错
     success_url = '/'
@@ -165,7 +165,7 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     # def
 
 
-class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class CommentDeleteView(CustomLoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
 
     def test_func(self):

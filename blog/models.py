@@ -36,7 +36,7 @@ class PostImages(models.Model):
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    commet = models.TextField()
+    comment = models.TextField()
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -44,7 +44,7 @@ class Comment(models.Model):
         ordering = ['-updated', '-created']
 
     def __repr__(self):
-        return self.commet[0:50]
+        return self.comment[0:50]
 
     def get_absolute_url(self):
         comment = get_object_or_404(Comment, id=self.pk)

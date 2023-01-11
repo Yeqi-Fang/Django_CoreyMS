@@ -10,6 +10,8 @@
                 <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
                 {% if object.author == user or user.is_superuser %}
                     <div>
+                        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'postimages-list' object.id %}">Images</a>
+
                         <a class="btn btn-secondary btn-sm mt-1 mb-1"
                            href="{% url 'post-update' object.id %}">Update</a>
                         <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
@@ -18,7 +20,9 @@
             </div>
             <h2 class="article-title">{{ object.title }}</h2>
             <p class="article-content">{{ object.content }}</p>
-            <p class="article-content">{{ object.latex }}</p>
+            {% if object.latex %}
+                <p class="article-content">{{ object.latex }}</p>
+            {% endif %}
             {% if  images %}
                 {% for image in images %}
                     <img src="{{ image.image.url }}" width=80%>
@@ -28,7 +32,7 @@
     </article>
     <div>
         <h1 class="">Comments</h1>
-        {% for comment in commets %}
+        {% for comment in comments %}
 
             <div class="container content-section">
                 <div class="row">
@@ -60,7 +64,7 @@
                             </div>
                         {% endif %}
                         <div class="row ml-1 ">
-                            <p style="font-size: 14pt">{{ comment }}</p>
+                            <p style="font-size: 14pt">{{ comment.comment }}</p>
                         </div>
                     </div>
                 </div>
@@ -76,7 +80,7 @@
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Leave Commet</legend>
                 {#                    {{ form|crispy }}#}
-                <input  class="form-control form-control-lg" placeholder="Say Something..." name="commet">
+                <input class="form-control form-control-lg" placeholder="Say Something..." name="commet">
             </fieldset>
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Commet</button>
