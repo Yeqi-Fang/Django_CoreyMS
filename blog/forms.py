@@ -18,7 +18,7 @@ class PostCreateForm(forms.ModelForm):
         fields = ['title', 'content', 'latex']
 
 
-class PostImageCreateForm(forms.ModelForm):
-    class Meta:
-        model = PostImages
-        fields = ['image']
+# class PostImageCreateForm(forms.ModelForm):
+#     class Meta:
+#         model = PostImages
+#         fields = ['image']

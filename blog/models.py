@@ -11,6 +11,7 @@ class Post(models.Model):
     latex = models.TextField(null=True, blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+
     # post_image = models.ImageField(blank=True, upload_to='post_pics')
 
     def __repr__(self):
@@ -31,6 +32,11 @@ class PostImages(models.Model):
 
     def __repr__(self):
         return str(self.post_id)
+
+    def get_absolute_url(self):
+        image = get_object_or_404(PostImages, id=self.pk)
+        post_id = image.post.id
+        return reverse('postimages-list', kwargs={'pk': post_id})
 
 
 class Comment(models.Model):

@@ -1,17 +1,24 @@
 {% extends "blog/base.html" %}
 {% block content %}
     <h1 class="mb-4">Images of this post</h1>
+    <a class="btn btn-warning btn-bgg mt-1 mb-4" href="{% url 'postimages-create' post_id %}">Add New</a>
+    <a class="btn btn-primary btn-bgg mt-1 mb-4" href="{% url 'post-detail' post_id %}">Back</a>
     {% for image in object_list %}
-        <div class="row">
-            <div class="col-8">
-                <img src="{{ image.image.url }}" width="80%">
-            </div>
-            <div class="col-4">
-                <div><a class="btn btn-info btn-bgg mt-1 mb-1" href="{% url 'postimages-update' image.id %}">Update</a></div>
-                <a class="btn btn-danger btn-bg mt-1 mb-1 px-3" href="{% url 'postimages-delete' image.id %}">Delete</a>
-            </div>
+        <div class="content-section">
+            <div class="row">
+                <div class="col-10">
+                    <img src="{{ image.image.url }}" width="80%">
+                </div>
+                <div class="col-2">
+                    <div><a class="btn btn-info btn-bgg mt-5 mb-1"
+                            href="{% url 'postimages-update' image.id %}">Update</a></div>
+                    <a class="btn btn-danger btn-bg mt-1 mb-1 px-3"
+                       href="{% url 'postimages-delete' image.id %}">Delete</a>
+                </div>
 
+            </div>
         </div>
+
 
     {% endfor %}
 {% endblock content %}

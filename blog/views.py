@@ -1,5 +1,4 @@
 import django
-
 from django.views.generic import (
     ListView,
     DetailView,
@@ -7,18 +6,12 @@ from django.views.generic import (
     DeleteView,
     UpdateView
 )
-from .models import Post, Comment, User, PostImages
+from .models import *
+from .forms import PostCreateForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import PostCreateForm, PostImageCreateForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-
 from django.shortcuts import render, redirect, get_object_or_404
-
-
-def home(request):
-    context = {'posts': Post.objects.all()}
-    return render(request, 'blog/home.html', context)
 
 
 class CustomLoginRequiredMixin(LoginRequiredMixin):
@@ -49,7 +42,7 @@ class PostDetailView(DetailView):
             Comment.objects.create(
                 user=request.user,
                 post=Post.objects.get(id=self.kwargs['pk']),
-                commet=request.POST.get('commet')
+                comment=request.POST.get('commet')
             )
             return redirect(f'/post/{self.kwargs["pk"]}')
         messages.error(request, 'You need to login to access This Page.', 'danger')
@@ -75,15 +68,6 @@ class UserPostListlView(ListView):
         return context
 
 
-# LoginRequiredMixin 相当于@login_required
-# class PostCreateView(CustomLoginRequiredMixin, CreateView):
-#     model = Post
-#     fields = ['title', 'content', 'post_image']
-#
-#     def form_valid(self, form):
-#         # 提交的表单对应的post(instance)的作者必须是当前登录的作者
-#         form.instance.author = self.request.user
-#         return super().form_valid(form)
 @login_required
 def post_create_view(request):
     if request.method == "POST":
@@ -102,6 +86,17 @@ def post_create_view(request):
     return render(request, 'blog/post_create_view.html', context)
 
 
+# LoginRequiredMixin 相当于@login_required
+# class PostCreateView(CustomLoginRequiredMixin, CreateView):
+#     model = Post
+#     fields = ['title', 'content', 'post_image']
+#
+#     def form_valid(self, form):
+#         # 提交的表单对应的post(instance)的作者必须是当前登录的作者
+#         form.instance.author = self.request.user
+#         return super().form_valid(form)
+
+
 # UserPassesTestMixin 检查修改post的用户是否是author
 class PostUpdateView(CustomLoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
@@ -112,7 +107,6 @@ class PostUpdateView(CustomLoginRequiredMixin, UserPassesTestMixin, UpdateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
-    # 如果不加会导致post没有author，报错
     def test_func(self):
         post = self.get_object()  # 获得当前修改的post对象
         # 检验当前登录用户是否是post的用户
@@ -120,15 +114,31 @@ class PostUpdateView(CustomLoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return True
         return False
 
+    # 如果不加会导致post没有author，报错
     # 确定修改post的用户是否是创建post的用户
 
 
-class PostImageListView(LoginRequiredMixin, ListView):
+class PostImageListView(CustomLoginRequiredMixin, ListView):
     model = PostImages
     fields = '__all__'
 
     def get_queryset(self):
         return PostImages.objects.filter(post=self.kwargs.get('pk')).all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post_id'] = self.kwargs.get('pk')
+        return context
+
+
+class PostImageCreateView(CustomLoginRequiredMixin, CreateView):
+    model = PostImages
+    fields = ['image']
+
+    def form_valid(self, form):
+        post = Post.objects.get(id=self.kwargs.get('pk'))
+        form.instance.post = post
+        return super().form_valid(form)
 
 
 class PostImageUpdateView(CustomLoginRequiredMixin, UpdateView):
@@ -143,7 +153,10 @@ class PostImageUpdateView(CustomLoginRequiredMixin, UpdateView):
 
 class PostImageDeleteView(CustomLoginRequiredMixin, DeleteView):
     model = PostImages
-    success_url = '/'
+
+    def get_success_url(self):
+        # return reverse('postimages', kwargs={'pk':self.kwargs.get('pk')})
+        return self.object.get_absolute_url()
 
 
 class PostDeleteView(CustomLoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -179,50 +192,17 @@ class CommentDeleteView(CustomLoginRequiredMixin, UserPassesTestMixin, DeleteVie
                 return True
             return False
 
-    # 设置删除成功之后redirect的网页，没有会报错
-    # success_url = '/'
-
     def get_success_url(self):
         return self.object.get_absolute_url()
 
-
-# def my_login_required(func):
-#     def inner(self, request, *args, **kwargs):
-#         if request.user.is_authenticated:
-#             func(request, *args, **kwargs)
-#         messages.error(request, 'You need to login to access This Page.', 'danger')
-#         return redirect('/login/')
-#
-#     return inner
-
-
-# @login_required
-# def commet(request, pk):
-#     if request.user.is_authenticated:
-#         if request.method == 'POST':
-#             Comment.objects.create(
-#                 user=request.user,
-#                 post=Post.objects.get(id=pk),
-#                 commet=request.POST.get('commet')
-#             )
-#             return redirect(f'/post/{pk}')
-#     messages.error(request, 'You need to login to access This Page.', 'danger')
-#     return redirect('/login/')
-
-
-# def CommentCreateView(ListView):
-
-
-# @my_login_required
-# def commet(request, pk):
-#     if request.method == 'POST':
-#         Comment.objects.create(
-#             user=request.user,
-#             post=Post.objects.get(id=pk),
-#             commet=request.POST.get('commet')
-#         )
-#         return redirect(f'/post/{pk}')
+    # 设置删除成功之后redirect的网页，没有会报错
+    # success_url = '/'
 
 
 def about(request):
     return render(request, 'blog/about.html', {'title': 'About'})
+
+
+def home(request):
+    context = {'posts': Post.objects.all()}
+    return render(request, 'blog/home.html', context)
