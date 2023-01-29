@@ -27,8 +27,7 @@ class CustomLoginRequiredMixin(LoginRequiredMixin):
 class PostListView(ListView):
     model = Post
     template_name = 'blog/home.html'
-    # 基于对象的View默认的html地址
-    # <app>/<model>_<viewtype>.html
+    # 基于对象的View默认的html地址 <app>/<model>_<viewtype>.html
     context_object_name = 'posts'
     ordering = ['-date_posted']
 
